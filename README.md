@@ -1,18 +1,13 @@
 # Skills
 
-Reusable Agent Skills organized by category.
+Reusable Agent Skills by Lazy Software Developer.
 
-## Groups
-
-### Research
-
-Skills for keyword research, website analysis, SERP exploration, demand discovery, and SaaS opportunity research.
-
-- `keyword-opportunity-research`
-
-Repository layout:
+## Repository layout
 
 ```text
+.claude-plugin/
+├── plugin.json
+└── marketplace.json
 skills/
 └── research/
     └── keyword-opportunity-research/
@@ -23,32 +18,49 @@ skills/
 
 ## Install
 
-List all skills in this repository:
+List skills in this repository:
 
 ```bash
 npx skills add lazysoftwaredeveloper/skills --list
 ```
 
-Install the whole `research` group by targeting its repository subtree:
+Install one skill globally:
 
 ```bash
-npx skills add https://github.com/lazysoftwaredeveloper/skills/tree/main/skills/research
+npx skills add lazysoftwaredeveloper/skills --skill keyword-opportunity-research -g
 ```
 
-Install one skill:
+Install all skills globally:
 
 ```bash
-npx skills add lazysoftwaredeveloper/skills --skill keyword-opportunity-research
+npx skills add lazysoftwaredeveloper/skills -g
 ```
 
-Install all skills from the repository:
+## Grouping in `npx skills list -g`
 
-```bash
-npx skills add lazysoftwaredeveloper/skills --all
+The grouping shown by `npx skills list -g` is plugin-based, not directory/category-based.
+
+This repository declares a Claude plugin manifest at `.claude-plugin/plugin.json` with:
+
+```json
+{
+  "name": "lazysoftwaredeveloper-skills",
+  "skills": [
+    "./skills/research/keyword-opportunity-research"
+  ]
+}
 ```
 
-## Group metadata
+The `skills` CLI persists that plugin name when installing skills. As a result, globally installed skills from this manifest should be shown under a heading derived from `lazysoftwaredeveloper-skills`, analogous to `Mattpocock Skills` for `mattpocock-skills`.
 
-`skills.sh.json` declares the same `Research` grouping for catalog/discovery surfaces that support the skills.sh grouping schema.
+Expected shape:
 
-Note: the current `skills` CLI does not yet expose a native `--group` flag. The subtree install command above is the repository-level way to install a category as a unit.
+```text
+Lazysoftwaredeveloper Skills
+  keyword-opportunity-research ~/.agents/skills/keyword-opportunity-research
+    Agents: ...
+```
+
+When adding more skills to this repository, add their paths to the `skills` array in `.claude-plugin/plugin.json` so they are associated with the same plugin group.
+
+If the skill was installed before this plugin manifest existed, reinstalling it is the safest way to refresh the lock-file plugin metadata.
