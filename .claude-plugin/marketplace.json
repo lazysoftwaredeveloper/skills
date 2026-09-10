@@ -1,0 +1,23 @@
+{
+  "name": "lazysoftwaredeveloper",
+  "owner": {
+    "name": "Lazy Software Developer",
+    "url": "https://github.com/lazysoftwaredeveloper"
+  },
+  "description": "Reusable agent skills by Lazy Software Developer.",
+  "plugins": [
+    {
+      "name": "lazysoftwaredeveloper-skills",
+      "source": "./",
+      "description": "Research and analysis skills, including keyword opportunity research.",
+      "category": "research",
+      "keywords": [
+        "research",
+        "keyword-research",
+        "seo",
+        "serp",
+        "saas"
+      ]
+    }
+  ]
+}
