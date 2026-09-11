@@ -4,18 +4,21 @@
     "name": "Lazy Software Developer",
     "url": "https://github.com/lazysoftwaredeveloper"
   },
-  "description": "Reusable agent skills for research, knowledge engineering, expert content writing, and publication QA.",
+  "description": "Reusable agent skills for research, knowledge engineering, content routing, expert content writing, and publication QA.",
   "plugins": [
     {
       "name": "lazysoftwaredeveloper-skills",
       "source": "./",
-      "description": "Research and content-engineering skills from evidence gathering through expert writing and publication QA.",
+      "description": "Research and content-engineering skills from evidence gathering through page-type routing, expert writing, and publication QA.",
       "category": "research",
       "keywords": [
         "research",
         "content-engineering",
+        "content-routing",
         "fact-checking",
         "writing",
+        "game-guide",
+        "walkthrough",
         "publication-qa",
         "seo",
         "serp"
