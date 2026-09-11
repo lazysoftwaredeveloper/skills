@@ -1,13 +1,17 @@
 {
   "name": "lazysoftwaredeveloper-skills",
-  "version": "1.0.0",
-  "description": "Lazy Software Developer's reusable research and analysis agent skills.",
+  "version": "1.1.0",
+  "description": "Lazy Software Developer's reusable research, knowledge normalization, content engineering, and publication QA skills.",
   "author": {
     "name": "Lazy Software Developer",
     "url": "https://github.com/lazysoftwaredeveloper"
   },
   "repository": "https://github.com/lazysoftwaredeveloper/skills",
   "skills": [
-    "./skills/keyword-opportunity-research"
+    "./skills/keyword-opportunity-research",
+    "./skills/research-to-facts",
+    "./skills/fact-quality-control",
+    "./skills/publication-context-builder",
+    "./skills/publication-qa"
   ]
 }

@@ -9,14 +9,17 @@
     {
       "name": "lazysoftwaredeveloper-skills",
       "source": "./",
-      "description": "Research and analysis skills, including keyword opportunity research.",
+      "description": "Research, keyword discovery, knowledge normalization, publication context isolation, and content QA skills.",
       "category": "research",
       "keywords": [
         "research",
         "keyword-research",
         "seo",
         "serp",
-        "saas"
+        "content-engineering",
+        "fact-checking",
+        "editorial-qa",
+        "knowledge"
       ]
     }
   ]
