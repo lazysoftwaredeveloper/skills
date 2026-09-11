@@ -1,9 +1,9 @@
 ---
 name: publication-context-builder
-description: 从经过质量控制的知识库中，为具体文章、攻略、教程或页面构造“发布上下文”：只选择与任务相关且允许发布的事实，并默认移除内部 provenance、竞品 URL、研究笔记和证据噪音。适用于 Knowledge → Writer 的隔离层。
-compatibility: 适用于支持 Agent Skills 的 ChatGPT/Agent 环境。最佳输入来自 fact-quality-control。可用于游戏、软件、SEO、旅游、产品评测、研究型内容等领域，并通过 publication mode 控制 attribution 暴露。
+description: 从经过质量控制的知识库中，为具体文章、攻略、教程或页面构造“发布上下文”：只选择与任务相关且允许发布的事实，并默认移除内部 provenance、竞品 URL、研究笔记和证据噪音。可消费 content-type-router 的 routing_decision，把 writer profile、required modules 与 context priorities 一并传给 Writer。
+compatibility: 适用于支持 Agent Skills 的 ChatGPT/Agent 环境。最佳输入来自 fact-quality-control + Page Brief；可选接收 content-type-router 输出。可用于游戏、软件、SEO、旅游、产品评测、研究型内容等领域，并通过 publication mode 控制 attribution 暴露。
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   language: "zh-CN"
   domain: "content-engineering"
 ---
@@ -23,6 +23,7 @@ Fact                     →     Fact
 Conditions               →     Conditions
 Exceptions               →     Exceptions
 Required attribution     →     Required attribution
+Sequence / state          →     Sequence / state when semantically required
 Internal source URL      ✕
 Competitor domain        ✕
 Research notes           ✕
@@ -35,15 +36,12 @@ Investigation history    ✕
 
 ## 1. 输入契约
 
-至少需要：
-
 ### A. Page Brief
 
 ```yaml
-page_goal: "帮助玩家完成 Boss fight"
-audience: "首次挑战该 Boss 的玩家"
-content_type: "game-guide"
-publication_mode: expert
+page_goal: "帮助玩家完成 Level 317"
+audience: "正在玩 Level 317 的玩家"
+content_type: "level_solution"
 ```
 
 ### B. Canonical Facts
@@ -58,44 +56,57 @@ publication_mode: expert
 - attribution；
 - provenance。
 
+对于程序型内容，还可包含：
+
+- sequence；
+- starting_state；
+- resulting_state；
+- action_target；
+- direction；
+- count；
+- solution_id。
+
+### C. Routing Decision（可选但推荐）
+
+来自 `content-type-router`：
+
+```yaml
+routing_decision:
+  writer_profile: game-walkthrough
+  publication_mode: expert
+  required_modules:
+    - exact_solution
+  optional_modules:
+    - starting_state
+    - common_mistake
+  context_priorities:
+    - ordered_steps
+    - direction
+    - count
+    - outcome
+```
+
+如果 Router 没有提供，则沿用 Page Brief / 调用方指定的 content type 与 publication mode。
+
 ## 2. Publication Mode
 
 ### `expert`
 
 默认隐藏 provenance 与来源身份。
 
-适合：
-
-- 游戏攻略；
-- 软件教程；
-- how-to；
-- 工具使用说明；
-- 普通知识型 utility 页面。
+适合：游戏攻略、游戏 reference、walkthrough、软件教程、how-to、工具使用说明。
 
 ### `editorial`
 
 只在来源身份对判断有帮助时保留 attribution。
 
-适合：
-
-- 产品评测；
-- 旅游攻略；
-- 商业分析；
-- 行业文章。
+适合：产品评测、旅游攻略、商业分析、行业文章。
 
 ### `evidence`
 
 对关键结论保留必要 attribution。
 
-适合：
-
-- 新闻；
-- 学术；
-- 医疗；
-- 法律；
-- 金融；
-- 政策；
-- 统计与争议性事实。
+适合：新闻、学术、医疗、法律、金融、政策、统计与争议性事实。
 
 若没有明确 mode：
 
@@ -107,39 +118,49 @@ publication_mode: expert
 
 ## 3. 输出契约
 
-输出只包含 Writer 真正需要的信息：
-
 ```yaml
 publication_context:
   publication_mode: expert
-  page_goal: "..."
-  audience: "..."
+  page_goal: "帮助玩家完成 Level 317"
+  audience: "正在玩 Level 317 的玩家"
+  content_type: "level_solution"
+  writer_profile: game-walkthrough
+  required_modules:
+    - exact_solution
+  optional_modules:
+    - starting_state
+    - common_mistake
   facts:
-    - statement: "Boss enters phase two at approximately 50% HP."
-      conditions: []
-      exceptions: []
-      qualifier: null
-      attribution: null
+    - statement: "Move the blue block left twice."
+      sequence: 1
+      direction: left
+      count: 2
+    - statement: "Rotate the center platform clockwise."
+      sequence: 2
   uncertainties: []
   do_not_claim:
-    - "Exact phase transition percentage beyond available evidence"
+    - "Any unverified steps between the observed actions"
   editorial_constraints:
-    - "Write from a knowledgeable player perspective"
-    - "Do not narrate the research process"
+    - "Preserve procedural order exactly"
 ```
 
 默认 **不输出 provenance**。
 
 ## 4. 工作流
 
-### Step 1 — 解析 Page Goal
+### Step 1 — 解析 Page Goal 与 Routing Decision
 
 确定：
 
 - 用户完成页面后要做什么；
+- writer profile；
+- required / optional modules；
+- context priorities；
 - 哪些问题必须回答；
 - 哪些事实与任务无关；
 - 是否需要版本、地区、平台限定。
+
+Router 决定“写哪一种页面”，Context Builder 决定“这页允许 Writer 看到哪些知识”。
 
 ### Step 2 — Filter by Publication Policy
 
@@ -155,7 +176,25 @@ publication_context:
 
 不要因为知识库里有一条有趣事实，就把它塞进文章。
 
-### Step 4 — Strip Internal Provenance
+### Step 4 — Preserve Semantic Structure
+
+如果 routing decision 表明页面是程序型内容（如 `game-walkthrough`），不得把有序结构压平成无序事实集合。
+
+必须保留所有影响操作正确性的字段，例如：
+
+- sequence；
+- starting_state；
+- resulting_state；
+- direction；
+- count；
+- action_target；
+- solution_id。
+
+规则：
+
+> Strip provenance, not procedure semantics.
+
+### Step 5 — Strip Internal Provenance
 
 默认移除：
 
@@ -172,7 +211,7 @@ publication_context:
 
 例外：该事实为 `REQUIRE_ATTRIBUTION`，且发布策略允许公开来源。
 
-### Step 5 — Build Writer-ready Facts
+### Step 6 — Build Writer-ready Facts
 
 把 facts 按用户任务组织，而不是按来源组织。
 
@@ -183,24 +222,42 @@ From YouTube:
 - ...
 From competitor A:
 - ...
-From Reddit:
-- ...
 ```
 
 好：
 
 ```text
-Mechanics:
+Starting state:
 - ...
-Route:
-- ...
-Failure cases:
+Ordered solution:
+1. ...
+2. ...
+Outcome:
 - ...
 ```
 
-### Step 6 — Create Negative Constraints
+或：
 
-从被排除的冲突/低置信度事实生成 `do_not_claim`。
+```text
+Mechanics:
+- ...
+Conditions:
+- ...
+Exceptions:
+- ...
+```
+
+### Step 7 — Required / Optional Module Gate
+
+- required module：必须有足够事实才能交给 Writer 成稿；
+- optional module：只有有事实支持时才传给 Writer；
+- 不得因为模板要求而补造 Tips、FAQ、Common Mistakes、Alternative Solution。
+
+若 `exact_solution` 是 required 但事实不完整，应生成 uncertainty / do_not_claim，而不是补齐步骤。
+
+### Step 8 — Create Negative Constraints
+
+从被排除的冲突、低置信度、缺失步骤中生成 `do_not_claim`。
 
 这样 Writer 不仅知道“能写什么”，还知道“不能擅自补什么”。
 
@@ -210,20 +267,11 @@ Failure cases:
 
 ### 内部 provenance
 
-用于：
-
-- 审计；
-- 重新验证；
-- 追踪来源；
-- 解决冲突。
-
-默认不传给 Writer。
+用于审计、重新验证、追踪来源、解决冲突，默认不传给 Writer。
 
 ### 公开 attribution
 
 只有在读者需要时传给 Writer。
-
-例如：
 
 ```yaml
 statement: "The agency revised the rule in 2026."
@@ -237,44 +285,42 @@ attribution:
 ## 6. 不可违反的规则
 
 1. **不能创造新事实。**
-2. **不能把低置信度事实通过“更自然的措辞”洗成确定事实。**
+2. **不能把低置信度事实通过更自然的措辞洗成确定事实。**
 3. **不能把内部 provenance 默认交给 Writer。**
 4. **不能删除决定事实成立的 qualifier。**
 5. **`REQUIRE_ATTRIBUTION` 不能被 expert mode 强行隐藏。**
 6. **context 必须围绕页面任务，而不是围绕研究来源。**
 7. **若 Writer 不需要某字段，就不要传。**
+8. **程序型内容必须保留 sequence / state / direction / count 等语义。**
+9. **required module 信息不完整时，不得靠推断补齐。**
+10. **optional module 无事实支持时必须省略。**
 
 ## 7. 典型转换
 
 ### Knowledge Store
 
 ```yaml
-statement: "Boss enters phase two at approximately 50% HP."
-confidence: high
+statement: "Move the blue block left twice."
+sequence: 1
+direction: left
+count: 2
 provenance:
-  - url: "https://competitor.example/..."
   - youtube: "video_01@03:52"
 publication_policy:
   decision: ALLOW
-attribution:
-  mode: none
 ```
 
 ### Writer Context
 
 ```yaml
-statement: "Boss enters phase two at approximately 50% HP."
+statement: "Move the blue block left twice."
+sequence: 1
+direction: left
+count: 2
 ```
 
-Writer 从结构上就没有机会泄漏竞品 URL。
+Writer 从结构上没有机会泄漏 YouTube，但仍保留了过关所需的操作语义。
 
 ## 8. 交接到下游
 
-下游通常是任意 Writer / LLM。
-
-写完后推荐运行 `publication-qa`，检查是否仍出现：
-
-- research meta language；
-- source leakage；
-- unsupported claims；
-- certainty inflation。
+推荐交给 `expert-content-writer`，由 `writer_profile` 选择具体表达策略；写完后运行 `publication-qa`。
