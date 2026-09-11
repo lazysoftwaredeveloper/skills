@@ -7,6 +7,7 @@ Reusable Agent Skills by Lazy Software Developer.
 | Skill | Purpose |
 |---|---|
 | `keyword-opportunity-research` | Evidence-driven keyword, SERP, user-pain and SaaS opportunity research |
+| `similarweb-landing-page-opportunity-research` | Turn Similarweb landing-page signals into root jobs, natural queries, demand graphs, competitive gaps, and site opportunities |
 | `research-to-facts` | Convert raw research into atomic, source-independent facts while preserving provenance |
 | `fact-quality-control` | Deduplicate facts, resolve/flag conflicts, score confidence and set publication policy |
 | `content-type-router` | Route a Page Brief to the correct writer profile, publication mode and content modules |
@@ -90,6 +91,7 @@ Repository layout is flat under `skills/`:
 ```text
 skills/
 ├── keyword-opportunity-research/
+├── similarweb-landing-page-opportunity-research/
 ├── research-to-facts/
 ├── fact-quality-control/
 ├── content-type-router/
@@ -111,7 +113,7 @@ npx skills add lazysoftwaredeveloper/skills --list
 Install one skill:
 
 ```bash
-npx skills add lazysoftwaredeveloper/skills --skill content-type-router
+npx skills add lazysoftwaredeveloper/skills --skill similarweb-landing-page-opportunity-research
 ```
 
 Install all skills from this repository:
