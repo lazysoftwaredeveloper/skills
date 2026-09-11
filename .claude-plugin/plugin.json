@@ -1,7 +1,7 @@
 {
   "name": "lazysoftwaredeveloper-skills",
-  "version": "1.1.0",
-  "description": "Lazy Software Developer's reusable research, knowledge normalization, content engineering, and publication QA skills.",
+  "version": "1.2.0",
+  "description": "Lazy Software Developer's reusable research, knowledge normalization, content engineering, expert writing, and publication QA skills.",
   "author": {
     "name": "Lazy Software Developer",
     "url": "https://github.com/lazysoftwaredeveloper"
@@ -12,6 +12,7 @@
     "./skills/research-to-facts",
     "./skills/fact-quality-control",
     "./skills/publication-context-builder",
+    "./skills/expert-content-writer",
     "./skills/publication-qa"
   ]
 }

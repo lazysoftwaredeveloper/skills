@@ -10,11 +10,12 @@ Reusable Agent Skills by Lazy Software Developer.
 | `research-to-facts` | Convert raw research into atomic, source-independent facts while preserving provenance |
 | `fact-quality-control` | Deduplicate facts, resolve/flag conflicts, score confidence and set publication policy |
 | `publication-context-builder` | Build writer-ready context while isolating internal sources, URLs and research notes |
+| `expert-content-writer` | Turn clean publication context into reader-facing expert content using domain profiles |
 | `publication-qa` | Final publication gate for source leakage, meta-language and unsupported claims |
 
 ## Content-engineering pipeline
 
-The four content-engineering skills are designed to work independently or as a pipeline:
+The five content-engineering skills are designed to work independently or as a pipeline:
 
 ```text
 Raw Research
@@ -27,14 +28,29 @@ Canonical Knowledge
     ↓
 publication-context-builder
     ↓
-Writer / LLM
+expert-content-writer
     ↓
 publication-qa
     ↓
 Publish
 ```
 
-The key design principle is that provenance stays available for audit and verification, but is not automatically exposed to the writer or the published page.
+The key design principle is separation of concerns:
+
+- provenance remains available upstream for audit and verification;
+- the context builder decides what the writer is allowed to see;
+- the writer controls expression, not truth;
+- publication QA challenges the finished draft before release.
+
+### Writer profiles
+
+`expert-content-writer` currently includes:
+
+- `game-guide`
+- `software-tutorial`
+- `product-review`
+
+Profiles change structure and editorial style without changing the underlying facts.
 
 ## Installed grouping
 
@@ -52,6 +68,7 @@ skills/
 ├── research-to-facts/
 ├── fact-quality-control/
 ├── publication-context-builder/
+├── expert-content-writer/
 └── publication-qa/
 ```
 
@@ -68,7 +85,7 @@ npx skills add lazysoftwaredeveloper/skills --list
 Install one skill:
 
 ```bash
-npx skills add lazysoftwaredeveloper/skills --skill research-to-facts
+npx skills add lazysoftwaredeveloper/skills --skill expert-content-writer
 ```
 
 Install all skills from this repository:
