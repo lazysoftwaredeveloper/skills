@@ -1,7 +1,7 @@
 {
   "name": "lazysoftwaredeveloper-skills",
-  "version": "1.3.0",
-  "description": "Lazy Software Developer's reusable research, knowledge normalization, content routing, expert writing, and publication QA skills.",
+  "version": "1.4.0",
+  "description": "Lazy Software Developer's reusable research, opportunity discovery, knowledge normalization, content routing, expert writing, and publication QA skills.",
   "author": {
     "name": "Lazy Software Developer",
     "url": "https://github.com/lazysoftwaredeveloper"
@@ -9,6 +9,7 @@
   "repository": "https://github.com/lazysoftwaredeveloper/skills",
   "skills": [
     "./skills/keyword-opportunity-research",
+    "./skills/similarweb-landing-page-opportunity-research",
     "./skills/research-to-facts",
     "./skills/fact-quality-control",
     "./skills/content-type-router",
